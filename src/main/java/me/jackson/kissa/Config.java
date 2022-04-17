@@ -9,7 +9,7 @@ import java.util.Properties;
 public class Config {
     private final Properties settings;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored") // java doesn't have discards? why?
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public Config() throws IOException {
         var defaults = new Properties();
         defaults.setProperty("ps5", "https://pc.ps5.update.playstation.net/update/ps5/official/tJMRE80IbXnE9YuG0jzTXgKEjIMoabr6/image/2022_0316/rec_028896220519726f78007ef3b9c7cd2e4df67f87babe533f61e908569220084f/PS5UPDATE.PUP");

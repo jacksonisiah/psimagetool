@@ -1,5 +1,6 @@
 package me.jackson.kissa;
 
+import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -9,41 +10,41 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainView {
-    public static Text message;
-
-    @SuppressWarnings({"unchecked"})
     public static FlowPane getView() {
-
-        // Warning Label
-        message = new Text();
+        // region Warning Label
+        var message = new Text();
         message.setTextAlignment(TextAlignment.CENTER);
+        // endregion
 
-        // Console type
+        // region Console type
         Label consoleText = new Label("Console type to image:");
-        ComboBox consoleBox = new ComboBox();
-        consoleBox.getItems().add("PlayStation 4");
-        consoleBox.getItems().add("PlayStation 5");
+        List<String> consoles = new ArrayList<>() {{
+            add("PlayStation 4");
+            add("PlayStation 5");
+        }};
+        var consoleBox = new ComboBox<>(FXCollections.observableList(consoles));
         HBox console = new HBox(10, consoleText, consoleBox);
         console.setAlignment(Pos.CENTER);
+        // endregion
 
-        // USB Drive
+        // region USB Drive
         Label usbText = new Label("USB Drive:");
-        ComboBox usbBox = new ComboBox();
-        for (File drive: USBDevice.getUSBDevices()) {
-            usbBox.getItems().add(drive.toString());
-        }
+        var usbBox = new ComboBox<>(FXCollections.observableList(USBDevice.getUSBDevices()));
         HBox usb = new HBox(10, usbText, usbBox);
         usb.setAlignment(Pos.CENTER);
+        // endregion
 
+        // region Button
         Button button = new Button("Create Media");
 
         button.setOnAction(actionEvent ->  {
-            String usbVal = (String) usbBox.getValue();
-            String conVal = (String) consoleBox.getValue();
+            String usbVal = usbBox.getValue();
+            String conVal = consoleBox.getValue();
 
             if (usbVal == null || conVal == null) {
                 message.setText("Console or USB is not selected.");
@@ -58,32 +59,36 @@ public class MainView {
                 alert.showAndWait().ifPresent((btnType) -> {
                     if (btnType == ButtonType.OK) {
                         button.setDisable(true);
+                        message.setText("Creating media (this may take a while)");
                         var status = PlayStation.createMedia(usbVal, conVal);
                         message.setText(status);
                         button.setDisable(false);
-                    } else if (btnType == ButtonType.CANCEL) {
-                        // do nothing
-                    }
+                    } else if (btnType == ButtonType.CANCEL) {/*do nothing*/}
                 });
             }
         });
+        // endregion
 
+        // region InfoButton
         HBox media = new HBox(button);
         media.setAlignment(Pos.CENTER);
 
-        Button infobutton = new Button("Info");
-        infobutton.setOnAction(actionEvent -> {
+        Button infoButton = new Button("Info");
+        infoButton.setOnAction(actionEvent -> {
             var alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Information");
             alert.setHeaderText(null);
-            alert.setContentText("Copyright (c) 2022 Jackson Isaiah." +
-                "\nThis software is provided under the terms of the MIT Licence. For more information, see the LICENSE file provided with this software." +
-                "\n\nPlayStation®, PlayStation®4 System Software and PlayStation®5 System Software are trademarks or registered trademarks of Sony Interactive Entertainment Inc. or its affiliates in the United States and other countries.");
+            alert.setContentText("""
+                Copyright (c) 2022 Jackson Isaiah.
+                This software is provided under the MIT Licence. For more information, see the LICENSE file.
+
+                PlayStation®, PlayStation®4 System Software and PlayStation®5 System Software are trademarks or registered trademarks of Sony Interactive Entertainment Inc.
+                """);
             alert.showAndWait();
         });
-
-        HBox info = new HBox(infobutton);
+        HBox info = new HBox(infoButton);
         info.setAlignment(Pos.BOTTOM_RIGHT);
+        //endregion
 
         FlowPane pane = new FlowPane(message, console, usb, media, info);
         pane.setHgap(10);

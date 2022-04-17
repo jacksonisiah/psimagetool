@@ -6,28 +6,28 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.util.Map;
 
 public class Download implements Runnable {
     private String message = "";
-    private final String downloadUrl;
+    private Map<String, String> conData;
     private final File cacheDir;
-    private final String updateFile;
 
-    public Download(String url, File dir, String file) {
-        downloadUrl = url;
+    public Download(File dir, Map<String, String> console) {
+        conData = console;
         cacheDir = dir;
-        updateFile = file;
     }
 
     @Override
     public void run() {
         try {
-            // avoid buffering update files into memory if possible
-            var url = new URL(downloadUrl);
-            ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-            FileOutputStream fos = new FileOutputStream(cacheDir + "/" + updateFile);
-            FileChannel fc = fos.getChannel();
+            // this method avoids loading 1+gb files into memory
+            var url = new URL(conData.get("downloadUrl"));
+            var rbc = Channels.newChannel(url.openStream());
+            var fos = new FileOutputStream(cacheDir + "/" + conData.get("updateFile"));
+            var fc = fos.getChannel();
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            fos.close();
         } catch (Exception e) {
             message = "An error occurred while downloading file: \n" + e.getMessage();
         }
