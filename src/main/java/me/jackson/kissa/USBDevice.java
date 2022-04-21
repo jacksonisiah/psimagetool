@@ -1,7 +1,5 @@
 package me.jackson.kissa;
 
-import javafx.collections.ObservableList;
-
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;

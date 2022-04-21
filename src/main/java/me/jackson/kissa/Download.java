@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 import java.util.Map;
 
 public class Download implements Runnable {
@@ -25,7 +23,6 @@ public class Download implements Runnable {
             var url = new URL(conData.get("downloadUrl"));
             var rbc = Channels.newChannel(url.openStream());
             var fos = new FileOutputStream(cacheDir + "/" + conData.get("updateFile"));
-            var fc = fos.getChannel();
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             fos.close();
         } catch (Exception e) {
